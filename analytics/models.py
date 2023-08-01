@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 
@@ -11,7 +12,7 @@ class Analytics(models.Model):
         RANGE2 = ('RANGE2', 'RANGE2')
         RANGE3 = ('RANGE3', 'RANGE3')
     id = models.BigAutoField(primary_key=True, verbose_name="ID")
-    user = models.OneToOneField(User, on_delete=models.RESTRICT)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.RESTRICT)
     investment = models.OneToOneField(Investment, on_delete=models.RESTRICT)
     date_range = models.CharField(max_length=10, choices=DateRange.choices)
     # performance_metrics = ...

@@ -33,7 +33,7 @@ def create_new_user_portfolio(stocks_symbols: list, investment_amount: int, is_m
 
 
 #############################################################################################################
-# 3 - plot user portfolio -# TODO plot at site
+# 3 - plot accounts portfolio -# TODO plot at site
 
 def plot_user_portfolio(curr_user: user.User) -> None:
     # pie chart of sectors weights
@@ -249,7 +249,7 @@ def get_all_users() -> list:
 
 def get_user_from_db(user_name: str):
     """
-    Get specific user by his name with his portfolio details from json file
+    Get specific accounts by his name with his portfolio details from json file
     """
     json_data = get_json_data(settings.USERS_JSON_NAME)
     if user_name not in json_data['usersList']:

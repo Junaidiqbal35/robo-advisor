@@ -1,0 +1,17 @@
+  <footer class="footer mt-auto py-3 fixed-bottom" style="background-color: #3dc4f0; box-shadow: 0 -1px 0 rgba(0, 0, 0, .3);">
+        <p>
+          <span>Hello</span>
+          {% if user.username %}
+            <span class="greeting">
+              {{ user.username | title }}
+            </span>
+          {% else %}
+            <span class="greeting">
+              guest
+            </span>
+          {% endif %}
+          <span>
+            !
+          </span>
+        </p>
+      </footer>

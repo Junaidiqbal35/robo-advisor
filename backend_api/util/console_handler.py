@@ -70,9 +70,9 @@ def main_menu() -> None:
     # operations- TODO- operates from the site
     print("Welcome to the stock market simulator")
     print("Please select one of the following options:")
-    print("1. FORM - for new user")
-    print("2. Refresh user data")
-    print("3. Plot user's portfolio data")
+    print("1. FORM - for new accounts")
+    print("2. Refresh accounts data")
+    print("3. Plot accounts's portfolio data")
     print("4. operations for experts:")
     print("8. Exit")
 

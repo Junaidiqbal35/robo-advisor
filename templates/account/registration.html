@@ -1,0 +1,54 @@
+{% extends "core/authentication_base.html" %}
+{% load crispy_forms_filters %}
+{% load static %}
+
+{% block content %}
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-12">
+        <h1 class="text-center mb-4">Join Today</h1>
+        <form id="signup-form" hx-post="{% url 'signup' %}" hx-replace-url="true">
+          {# {% csrf_token %} #}
+          {{ form | crispy }}
+
+          <div class="text-center mt-3">
+            <input class="btn btn-primary" type="submit" value="Register">
+          </div>
+        </form>
+
+        <div class="text-center mt-3">
+          <small class="text-muted">
+            Already Have An Account?
+            <a class="ml-2" href="{% url 'account_login' %}">
+              Sign In
+            </a>
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    /* Custom CSS for additional styling */
+    body {
+      background-color: #f0f2f5;
+    }
+
+    .container {
+      max-width: 900px;
+    }
+
+    /* Adjust margins for better spacing */
+    .mb-4 {
+      margin-bottom: 20px;
+    }
+
+    .mt-3 {
+      margin-top: 15px;
+    }
+
+    .ml-2 {
+      margin-left: 10px;
+    }
+  </style>
+{% endblock %}

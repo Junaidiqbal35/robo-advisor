@@ -6,7 +6,7 @@ if __name__ == '__main__':
     exit_loop_operation = 8
 
     while selection != exit_loop_operation:
-        if selection == 1:  # Basic data from user
+        if selection == 1:  # Basic data from accounts
             # TODO - get login name instead of terminal
             login_name: str = manage_data.get_name()
             # TODO - get int value from radio button (0\1)
@@ -47,7 +47,7 @@ if __name__ == '__main__':
             sum_of_score = first_question_score + second_question_score + third_question_score
             level_of_risk = manage_data.get_level_of_risk_by_score(sum_of_score)
 
-            # creates new user with portfolio details
+            # creates new accounts with portfolio details
             new_portfolio = manage_data.create_new_user_portfolio(
                 stocks_symbols=settings.STOCKS_SYMBOLS,
                 investment_amount=investment_amount,
@@ -61,7 +61,7 @@ if __name__ == '__main__':
                 pct_change_table=pct_change_table
             )
 
-            # add user to DB(json file)
+            # add accounts to DB(json file)
             # new_user.update_json_file("backend_api/DB/users")
             # TODO use sqlite instead of json file or makes conversion from json to sqlite
 
@@ -69,7 +69,7 @@ if __name__ == '__main__':
             pass
 
         elif selection == 3:
-            # plot user portfolio's data
+            # plot accounts portfolio's data
             name = manage_data.get_name()
             selected_user = manage_data.get_user_from_db(name)
             if selected_user is not None:

@@ -8,7 +8,7 @@ from backend_api.util import manage_data, settings
 from backend_api.util.manage_data import create_new_user_portfolio
 from core.forms import AlgorithmPreferencesForm, InvestmentPreferencesForm
 from core.models import TeamMember, QuestionnaireA, QuestionnaireB
-from user.models import InvestorUser
+from accounts.models import InvestorUser
 
 
 def homepage(request):
@@ -75,12 +75,12 @@ def capital_market_investment_preferences_form(request, **kwargs):
     except Http404:
         return HttpResponse("You must have an instance of QuestionnaireA to fill this form.", status=404)
 
-    # Each user fills this form, and it gets a rating from 3 to 9
+    # Each accounts fills this form, and it gets a rating from 3 to 9
     try:
         questionnaire = QuestionnaireB.objects.get(user=request.user)
     except QuestionnaireB.DoesNotExist:
         questionnaire = None
-        # Retrieve the UserPreferencesA instance for the current user
+        # Retrieve the UserPreferencesA instance for the current accounts
     if request.method == 'GET':
         if questionnaire is None:  # CREATE
             context = {
@@ -126,7 +126,7 @@ def capital_market_investment_preferences_form(request, **kwargs):
             form.save()
             # Backend
             risk_level = manage_data.get_level_of_risk_by_score(answers_sum)
-            # TODO: create new user instance in the database, Yarden should acknowledge this
+            # TODO: create new accounts instance in the database, Yarden should acknowledge this
             stocks_symbols_str_list = convert_type_list_to_str_list(settings.STOCKS_SYMBOLS)
             # TODO maybe get tables by parameter input
             tables = manage_data.get_extended_data_from_db(
@@ -177,7 +177,7 @@ def capital_market_investment_preferences_form(request, **kwargs):
             #     daily_change = 0.0
             try:
                 investor_user = InvestorUser.objects.get(user=request.user)
-                # If we get here, it means that the user is on UPDATE form (there is InvestorUser instance)
+                # If we get here, it means that the accounts is on UPDATE form (there is InvestorUser instance)
                 investor_user.risk_level = risk_level
                 investor_user.stocks_symbols = ';'.join(convert_type_list_to_str_list(stocks_symbols))
                 investor_user.stocks_weights = ';'.join(convert_type_list_to_str_list(stocks_weights))
@@ -191,7 +191,7 @@ def capital_market_investment_preferences_form(request, **kwargs):
                 investor_user.monthly_change = monthly_change
                 investor_user.daily_change = daily_change
             except InvestorUser.DoesNotExist:
-                # If we get here, it means that the user is on CREATE form (no InvestorUser instance)
+                # If we get here, it means that the accounts is on CREATE form (no InvestorUser instance)
                 InvestorUser.objects.create(
                     user=request.user,
                     risk_level=risk_level,

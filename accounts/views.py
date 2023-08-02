@@ -31,10 +31,7 @@ class SignUpView(SignupView):
             messages.success(request, 'Successfully Account Created.')
             return redirect('account_login')
 
-        ctx = {}
-        ctx.update(csrf(request))
-        form_html = render_crispy_form(form, context=ctx)
-        return HttpResponse(form_html)
+        return render(request, self.template_name, {'form': form})
 
 
 class HtmxLoginView(LoginView):
@@ -84,9 +81,56 @@ def profile(request):
 
 
 def check_email(request):
-    form = UserRegisterForm(request.GET)
-    context = {
-        'field': as_crispy_field(form['email']),
-        'valid': not form['email'].errors
-    }
-    return render(request, 'partials/field.html', context)
+    if request.method == 'POST':
+        form = UserRegisterForm(request.POST)
+        print(form)
+        context = {
+            'field': as_crispy_field(form['email']),
+            'valid': not form['email'].errors
+        }
+        return render(request, 'partials/field.html', context)
+    else:
+        # If it's a GET request, return an empty form
+        form = UserRegisterForm()
+        context = {
+            'field': as_crispy_field(form['email']),
+            'valid': True
+        }
+        return render(request, 'partials/field.html', context)
+
+
+def check_email(request):
+    if request.method == 'POST':
+        form = UserRegisterForm(request.POST)
+        print(form)
+        context = {
+            'field': as_crispy_field(form['email']),
+            'valid': not form['email'].errors
+        }
+        return render(request, 'partials/field.html', context)
+    else:
+
+        form = UserRegisterForm()
+        context = {
+            'field': as_crispy_field(form['email']),
+            'valid': True
+        }
+        return render(request, 'partials/field.html', context)
+
+
+def check_phone_number(request):
+    if request.method == 'POST':
+        form = UserRegisterForm(request.POST)
+        context = {
+            'field': as_crispy_field(form['phone_number']),
+            'valid': not form['phone_number'].errors
+        }
+        return render(request, 'partials/field.html', context)
+    else:
+
+        form = UserRegisterForm()
+        context = {
+            'field': as_crispy_field(form['phone_number']),
+            'valid': True
+        }
+        return render(request, 'partials/field.html', context)

@@ -1,4 +1,4 @@
-{% extends "core/authentication_base.html" %}
+{% extends "core/base.html" %}
 {% load crispy_forms_filters %}
 {% load static %}
 
@@ -7,8 +7,8 @@
     <div class="row justify-content-center">
       <div class="col-md-12">
         <h1 class="text-center mb-4">Join Today</h1>
-        <form id="signup-form" hx-post="{% url 'signup' %}" hx-replace-url="true">
-          {# {% csrf_token %} #}
+        <form id="signup-form" method="post" action="{% url 'signup' %}">
+           {% csrf_token %}
           {{ form | crispy }}
 
           <div class="text-center mt-3">

@@ -1,3 +1,4 @@
+import phonenumbers
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django import forms
@@ -18,7 +19,6 @@ def ac_il_email_validator(value):
 class UserRegisterForm(UserCreationForm):
 
     # TODO: Email must include `@ac` - thus be academic email!
-    email = forms.EmailField(label="Email address", validators=[ac_il_email_validator])
     # TODO: add phone number field with validation
     # phone = PhoneNumberField()
     first_name = forms.CharField(label="First name", max_length=20)
@@ -29,12 +29,29 @@ class UserRegisterForm(UserCreationForm):
         self.helper = FormHelper(self)
 
         self.helper.form_id = 'signup-form'
-        self.helper.attrs = {
-            'hx-post': reverse_lazy('signup'),
-            'hx-target': '#signup-form',
-            # 'hx-swap': 'innerHTML'
-        }
         self.helper.add_input(Submit('submit', 'Submit'))
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        try:
+            ac_il_email_validator(email)
+        except ValidationError as e:
+            raise forms.ValidationError(str(e))
+        return email
+
+    # def clean_phone_number(self):
+    #     phone_number = self.phone_number
+    #
+    #     try:
+    #         parsed_phone = phonenumbers.parse(phone_number, None)
+    #         if not phonenumbers.is_valid_number(parsed_phone):
+    #             raise ValidationError('Enter a valid phone number (e.g. 02-123-4567) or a number with an '
+    #                                   'international call prefix.')
+    #     except phonenumbers.NumberParseException:
+    #         raise ValidationError('Enter a valid phone number (e.g. 02-123-4567) or a number with an international '
+    #                               'call prefix.')
+    #
+    #     return phone_number
 
     class Meta:
         model = CustomUser
@@ -46,12 +63,17 @@ class UserRegisterForm(UserCreationForm):
             'password': forms.PasswordInput(),
 
             'email': forms.TextInput(attrs={
-                'hx-get': reverse_lazy('check_email'),
+                'hx-post': reverse_lazy('check_email'),
                 'hx-target': '#div_id_email',
+                'hx-trigger': 'keyup changed delay:1s'
+            }),
+            'phone_number': forms.TextInput(attrs={
+                'hx-post': reverse_lazy('check_phone_number'),
+                'hx-target': '#div_id_phone_number',
                 'hx-trigger': 'keyup changed delay:1s'
             })
         }
-
+# Enter a valid phone number (e.g. 02-123-4567) or a number with an international call prefix.
 
 class UserUpdateForm(forms.ModelForm):
     first_name = forms.CharField(label="First name", max_length=20)

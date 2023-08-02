@@ -1,4 +1,5 @@
 import pytest
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.urls import reverse, resolve
 from django.http import Http404
@@ -53,40 +54,47 @@ def test_logout_url():
 
 
 @pytest.mark.django_db
-def test_user_registration(client):
+def test_user_registration(client, user_factory):
     # Test user registration
     data = {
         'first_name': 'test',
         'last_name': 'user',
         'phone_number': '+97221234567',
-        'email': 'test@example.com',
-        'password': 'testpassword',
+        'email': 'test@example.ac.il',
+        'password1': 'django1234',
+        'password2': 'django1234',
 
     }
+    user = user_factory(**data)
+    assert user is not None
+    assert user.first_name == 'test'
+    assert user.last_name == 'user'
     response = client.post(reverse('signup'), data)
-    print(response.status_code)
+    assert response.request['REQUEST_METHOD'] == 'POST'
+
     assert response.status_code == 200
 
-    # assert CustomUser.objects.filter(email='test@example.com').exists()
+    assert CustomUser.objects.filter(email='test@example.ac.il').exists()
 
 
 @pytest.mark.django_db
 def test_user_login_logout(client, user_factory):
     # Create a test user
     user = user_factory()
+    print(user.email)
 
     # Test user login
     data = {
         'login': user.email,
-        'password': 'testpassword',
+        'password': 'django1234',
     }
     response = client.post(reverse('account_login'), data)
-
     assert response.status_code == 200
+    assert response.request['REQUEST_METHOD'] == 'POST'
 
     # Test user logout
     response = client.post(reverse('account_logout'))
-    print(response.status_code)
+
     assert response.status_code == 302
 
 
@@ -94,7 +102,7 @@ def test_login_invalid_credentials(client, user_factory):
     user = user_factory()
 
     response = client.post(reverse('account_login'), data={
-        'email': user.email,
+        'login': user.email,
         'password': 'wrongpassword',
     })
 
@@ -135,25 +143,56 @@ def test_password_reset(client, user_factory):
     response = client.post(reverse('account_reset_password'), data={
         'email': user.email,
     })
-
-    assert response.status_code == 302  # Redirects to the success URL after the reset request
+    assert response.status_code == 302
 
     # Retrieve the reset URL from the response
     reset_url = response.url
-
-    # Now simulate clicking the reset link in the email
     response = client.get(reset_url)
 
     assert response.status_code == 200
 
 
+@pytest.mark.django_db
+def test_user_registration_invalid_phone_number(client):
+    # Test user registration with invalid phone number format
+    data = {
+        'first_name': 'test',
+        'last_name': 'user',
+        'phone_number': '12345',  # Invalid phone number format
+        'email': 'test@example.com',
+        'password': 'testpassword',
+    }
+    response = client.post(reverse('signup'), data)
+    assert response.status_code == 200
+    assert 'Enter a valid phone number' in response.content.decode()
+
+
+@pytest.mark.django_db
+def test_user_registration_invalid_email(client):
+    # Test user registration with invalid email format
+    data = {
+        'first_name': 'test',
+        'last_name': 'user',
+        'phone_number': '+97221234567',
+        'email': 'invalid_email@gmail.com',
+        'password': 'testpassword',
+    }
+    response = client.post(reverse('signup'), data)
+    assert response.status_code == 200
+    assert 'Enter a valid email address' in response.content.decode()
+
+
 @pytest.fixture
 def user_factory(db):
     def create_user(**kwargs):
-        user = CustomUser.objects.create(first_name='tester', last_name='1', phone_number='21234567',
-                                         email='test@example.com',
-                                         password='testpassword')
-        print(user)
+        user = CustomUser.objects.create(
+            first_name=kwargs.get('first_name', 'test'),
+            last_name=kwargs.get('last_name', 'user'),
+            phone_number=kwargs.get('phone_number', '+97221234567'),
+            email=kwargs.get('email', 'test@example.ac.il'),
+            password=kwargs.get('password', 'django1234')
+        )
+
         return user
 
     return create_user
